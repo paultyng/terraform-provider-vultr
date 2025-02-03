@@ -80,13 +80,13 @@ func resourceVultrInstance() *schema.Resource {
 Will not do anything unless enable_ipv6 is also true.`,
 			},
 			"vpc_ids": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"vpc2_ids": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
@@ -369,13 +369,13 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
-		for _, v := range vpcIDs.(*schema.Set).List() {
+		for _, v := range vpcIDs.([]interface{}) {
 			req.AttachVPC = append(req.AttachVPC, v.(string))
 		}
 	}
 
 	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
-		for _, v := range vpcIDs.(*schema.Set).List() {
+		for _, v := range vpcIDs.([]interface{}) {
 			req.AttachVPC2 = append(req.AttachVPC2, v.(string))
 		}
 	}
@@ -620,12 +620,12 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		oldVPC, newVPC := d.GetChange("vpc_ids")
 
 		var oldIDs []string
-		for _, v := range oldVPC.(*schema.Set).List() {
+		for _, v := range oldVPC.([]interface{}) {
 			oldIDs = append(oldIDs, v.(string))
 		}
 
 		var newIDs []string
-		for _, v := range newVPC.(*schema.Set).List() {
+		for _, v := range newVPC.([]interface{}) {
 			newIDs = append(newIDs, v.(string))
 		}
 
@@ -638,12 +638,12 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		oldVPC, newVPC := d.GetChange("vpc2_ids")
 
 		var oldIDs []string
-		for _, v := range oldVPC.(*schema.Set).List() {
+		for _, v := range oldVPC.([]interface{}) {
 			oldIDs = append(oldIDs, v.(string))
 		}
 
 		var newIDs []string
-		for _, v := range newVPC.(*schema.Set).List() {
+		for _, v := range newVPC.([]interface{}) {
 			newIDs = append(newIDs, v.(string))
 		}
 
@@ -713,7 +713,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
 		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range vpcIDs.(*schema.Set).List() {
+		for _, v := range vpcIDs.([]interface{}) {
 			detach.DetachVPC = append(detach.DetachVPC, v.(string))
 		}
 
@@ -724,7 +724,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
 		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range vpcIDs.(*schema.Set).List() {
+		for _, v := range vpcIDs.([]interface{}) {
 			detach.DetachVPC2 = append(detach.DetachVPC2, v.(string))
 		}
 

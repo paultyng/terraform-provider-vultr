@@ -72,7 +72,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				ForceNew: true,
 			},
 			"vpc2_ids": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
@@ -264,7 +264,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 	}
 
 	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
-		for _, v := range vpcIDs.(*schema.Set).List() {
+		for _, v := range vpcIDs.([]interface{}) {
 			req.AttachVPC2 = append(req.AttachVPC2, v.(string))
 		}
 	}
@@ -411,12 +411,12 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 		oldVPC, newVPC := d.GetChange("vpc2_ids")
 
 		var oldIDs []string
-		for _, v := range oldVPC.(*schema.Set).List() {
+		for _, v := range oldVPC.([]interface{}) {
 			oldIDs = append(oldIDs, v.(string))
 		}
 
 		var newIDs []string
-		for _, v := range newVPC.(*schema.Set).List() {
+		for _, v := range newVPC.([]interface{}) {
 			newIDs = append(newIDs, v.(string))
 		}
 
@@ -449,7 +449,7 @@ func resourceVultrBareMetalServerDelete(ctx context.Context, d *schema.ResourceD
 
 	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
 		detach := &govultr.BareMetalUpdate{}
-		for _, v := range vpcIDs.(*schema.Set).List() {
+		for _, v := range vpcIDs.([]interface{}) {
 			detach.DetachVPC2 = append(detach.DetachVPC2, v.(string))
 		}
 
